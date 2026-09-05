@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext';
 import { caseFormats, boxMaterials, calculateCaseQuote } from '../data/casePackagingData';
+import ThreeCaseViewer from '../components/ThreeCaseViewer';
 import { 
   Box, 
   Layers, 
@@ -31,156 +32,11 @@ export default function CaseDesignPage({ onOpenSaveModal }) {
     volume 
   } = useProject();
 
-  const canvasRef = useRef(null);
-
   const caseQuote = calculateCaseQuote({
     totalUnits: volume,
     caseFormatId: activeCaseFormat.id,
     boxMaterialId: activeBoxMaterial.id
   });
-
-  // Render Realistic 2D/3D Master Carton / Shrink Wrap Canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-
-    ctx.clearRect(0, 0, w, h);
-
-    const cx = w / 2;
-    const cy = h / 2;
-
-    const isShrink = activeCaseFormat.category === 'Shrink Wrap';
-    const isTray = activeCaseFormat.category === 'Display Tray';
-
-    // Background glow
-    const bgGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, 180);
-    bgGlow.addColorStop(0, 'rgba(0, 119, 182, 0.08)');
-    bgGlow.addColorStop(1, 'transparent');
-    ctx.fillStyle = bgGlow;
-    ctx.fillRect(0, 0, w, h);
-
-    // Box Geometry
-    const boxW = isShrink ? 220 : isTray ? 260 : 240;
-    const boxH = isShrink ? 190 : isTray ? 140 : 180;
-    const boxX = cx - boxW / 2;
-    const boxY = cy - boxH / 2;
-
-    // 1. Isometric / Perspective Top Flap
-    ctx.beginPath();
-    ctx.moveTo(boxX, boxY);
-    ctx.lineTo(boxX + 40, boxY - 30);
-    ctx.lineTo(boxX + boxW + 40, boxY - 30);
-    ctx.lineTo(boxX + boxW, boxY);
-    ctx.closePath();
-
-    if (activeBoxMaterial.id === 'natural-kraft') {
-      ctx.fillStyle = '#B45309';
-    } else if (activeBoxMaterial.id === 'white-bleached') {
-      ctx.fillStyle = '#E2E8F0';
-    } else {
-      ctx.fillStyle = '#0B2545';
-    }
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
-    ctx.stroke();
-
-    // 2. Right Side Depth Flap
-    ctx.beginPath();
-    ctx.moveTo(boxX + boxW, boxY);
-    ctx.lineTo(boxX + boxW + 40, boxY - 30);
-    ctx.lineTo(boxX + boxW + 40, boxY + boxH - 30);
-    ctx.lineTo(boxX + boxW, boxY + boxH);
-    ctx.closePath();
-
-    if (activeBoxMaterial.id === 'natural-kraft') {
-      ctx.fillStyle = '#92400E';
-    } else if (activeBoxMaterial.id === 'white-bleached') {
-      ctx.fillStyle = '#CBD5E1';
-    } else {
-      ctx.fillStyle = '#071A2F';
-    }
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-    ctx.stroke();
-
-    // 3. Front Box Face
-    ctx.beginPath();
-    ctx.roundRect(boxX, boxY, boxW, boxH, isShrink ? 12 : 4);
-
-    if (isShrink) {
-      // Semi-transparent shrink wrap with bottle silhouettes inside
-      ctx.fillStyle = 'rgba(224, 242, 254, 0.85)';
-      ctx.fill();
-      ctx.strokeStyle = '#00B4D8';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw inside bottle previews
-      const numBottles = 4;
-      const bSlot = (boxW - 20) / numBottles;
-      for (let i = 0; i < numBottles; i++) {
-        const ibx = boxX + 10 + i * bSlot + 8;
-        const iby = boxY + 20;
-        ctx.fillStyle = '#0B2545';
-        ctx.beginPath();
-        ctx.roundRect(ibx, iby, bSlot - 16, boxH - 40, 8);
-        ctx.fill();
-      }
-    } else {
-      // Solid Corrugated Box Face
-      if (activeBoxMaterial.id === 'natural-kraft') {
-        ctx.fillStyle = '#D97706';
-      } else if (activeBoxMaterial.id === 'white-bleached') {
-        ctx.fillStyle = '#FFFFFF';
-      } else {
-        ctx.fillStyle = '#0B2545';
-      }
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(15, 23, 42, 0.15)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
-    // 4. Custom Case Graphics & Tape
-    ctx.save();
-    ctx.textAlign = 'center';
-
-    // Box Header Label
-    ctx.font = 'bold 14px "Space Grotesk", sans-serif';
-    ctx.fillStyle = (activeBoxMaterial.id === 'white-bleached' || isShrink) ? '#0B2545' : '#FFFFFF';
-    ctx.fillText((caseBrandText || `${brandName} 12-PACK`).toUpperCase(), cx, boxY + 50);
-
-    // Pack Count & Spec
-    ctx.font = 'bold 10px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#00B4D8';
-    ctx.fillText(`${activeCaseFormat.unitsPerCase} x ${activeBottle.capacity} • MASTER CASE`, cx, boxY + 75);
-
-    // Fluting & Certified Stamp
-    ctx.font = '8px "JetBrains Mono", monospace';
-    ctx.fillStyle = (activeBoxMaterial.id === 'white-bleached' || isShrink) ? '#64748B' : '#CBD5E1';
-    ctx.fillText(`FLUTE: ${activeCaseFormat.fluting.split('(')[0]} • SQF-3 CERTIFIED`, cx, boxY + 105);
-
-    // Barcode Simulation
-    const barW = 120;
-    const barH = 26;
-    const barX = cx - barW / 2;
-    const barY = boxY + boxH - 45;
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(barX - 4, barY - 4, barW + 8, barH + 8);
-    ctx.fillStyle = '#0F172A';
-    for (let x = barX; x < barX + barW; x += 4) {
-      if (Math.random() > 0.3) {
-        ctx.fillRect(x, barY, 2, barH);
-      }
-    }
-
-    ctx.restore();
-
-  }, [activeCaseFormat, activeBoxMaterial, caseBrandText, brandName, activeBottle]);
 
   const handlePushToFormulation = () => {
     confetti({
@@ -224,27 +80,27 @@ export default function CaseDesignPage({ onOpenSaveModal }) {
       {/* Main Studio View: Canvas Left, Catalog Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
-        {/* Left: 2D/3D Case Mockup Canvas */}
+        {/* Left: 3D Master Case & Shrink Bundle Viewer */}
         <div className="lg:col-span-5 space-y-6 sticky top-24">
-          <div className="glass-card p-8 rounded-3xl border border-slate-200 space-y-6 text-center">
+          <div className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6 text-center">
             
             <div className="flex items-center justify-between text-xs font-mono text-slate-500 border-b border-slate-100 pb-3">
               <span className="text-brand-blue font-bold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></span>
-                CASE PACKAGING PROOF
+                3D SECONDARY PACKAGING PROOF
               </span>
-              <span>{activeCaseFormat.category}</span>
+              <span className="bg-sky-50 text-brand-blue px-2 py-0.5 rounded border border-sky-200 font-bold">{activeCaseFormat.category}</span>
             </div>
 
-            <canvas
-              ref={canvasRef}
-              width={340}
-              height={320}
-              className="w-full max-w-[320px] h-auto mx-auto drop-shadow-md"
+            <ThreeCaseViewer
+              caseFormat={activeCaseFormat}
+              boxMaterial={activeBoxMaterial}
+              caseBrandText={caseBrandText || `${brandName} ${activeCaseFormat.unitsPerCase}-PACK`}
+              bottleCapacity={activeBottle.capacity}
             />
 
             {/* Quick Case Metrics */}
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-mono space-y-1 text-left">
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-mono space-y-1.5 text-left">
               <div className="flex justify-between text-slate-500">
                 <span>Case Format:</span>
                 <span className="text-slate-900 font-bold">{activeCaseFormat.name}</span>
@@ -271,7 +127,6 @@ export default function CaseDesignPage({ onOpenSaveModal }) {
               <span>Next: Water Chemistry & Formulation</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
           </div>
         </div>
 
