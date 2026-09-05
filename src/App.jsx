@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import PlantHud from './components/PlantHud';
 import CapabilitiesSection from './components/CapabilitiesSection';
+import ProcessPipeline from './components/ProcessPipeline';
 import WaterTechSection from './components/WaterTechSection';
 import BottleStudio from './components/BottleStudio';
 import RfqCalculator from './components/RfqCalculator';
@@ -51,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="bg-steel-950 min-h-screen text-steel-100 flex flex-col selection:bg-clean-cyan selection:text-steel-950">
+    <div className="bg-steel-950 min-h-screen text-steel-100 flex flex-col selection:bg-clean-cyan selection:text-steel-950 font-sans">
       
       {/* Top Navigation */}
       <Navbar onOpenRfq={handleOpenDefaultRfq} />
@@ -69,19 +71,31 @@ export default function App() {
           }}
         />
 
+        {/* Live Plant Telemetry HUD */}
+        <PlantHud />
+
+        {/* 4 High-Speed Production Lines */}
         <CapabilitiesSection />
 
+        {/* 5-Step Process Pipeline */}
+        <ProcessPipeline />
+
+        {/* Water Chemistry & Formulations */}
         <WaterTechSection />
 
+        {/* 3D Custom Bottle Studio */}
         <BottleStudio onConfigureForRfq={handleStudioConfigApplied} />
 
+        {/* Turnkey RFQ Calculator Matrix */}
         <RfqCalculator
           initialConfig={activeConfig}
           onOpenRfqWithData={handleOpenRfqWithData}
         />
 
+        {/* Quality & Certifications Hub */}
         <QualityHub />
 
+        {/* Plant Tour & Contact */}
         <ContactSection />
       </main>
 
