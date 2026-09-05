@@ -1,114 +1,57 @@
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import PlantHud from './components/PlantHud';
-import CapabilitiesSection from './components/CapabilitiesSection';
-import ProcessPipeline from './components/ProcessPipeline';
-import WaterTechSection from './components/WaterTechSection';
-import BottleStudio from './components/BottleStudio';
-import RfqCalculator from './components/RfqCalculator';
-import QualityHub from './components/QualityHub';
-import ContactSection from './components/ContactSection';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ProjectProvider } from './context/ProjectContext';
+import Header from './components/Header';
 import Footer from './components/Footer';
-import RfqModal from './components/RfqModal';
-import { calculateRFQEstimate } from './data/rfqPricingTiers';
+import SaveProjectModal from './components/SaveProjectModal';
+
+// Pages
+import HomePage from './pages/HomePage';
+import SourcingPage from './pages/SourcingPage';
+import DesignPrintPage from './pages/DesignPrintPage';
+import CaseDesignPage from './pages/CaseDesignPage';
+import FormulationPage from './pages/FormulationPage';
+import ManufacturingPage from './pages/ManufacturingPage';
+import QuotePage from './pages/QuotePage';
+import AccountPage from './pages/AccountPage';
 
 export default function App() {
-  const [rfqModalOpen, setRfqModalOpen] = useState(false);
-  const [activeConfig, setActiveConfig] = useState({
-    substrateId: 'aluminum-bottle',
-    formulaId: 'alkaline',
-    finishId: 'gloss',
-    brandName: 'PURE FORMULA'
-  });
-  const [activeRfqData, setActiveRfqData] = useState(() => {
-    return calculateRFQEstimate({
-      volume: 100000,
-      substrateId: 'aluminum-bottle',
-      formulaId: 'alkaline',
-      finishId: 'gloss',
-      liquidNitrogenDosing: true
-    });
-  });
-
-  const handleStudioConfigApplied = (config) => {
-    setActiveConfig(config);
-    const updated = calculateRFQEstimate({
-      volume: activeRfqData.volume || 100000,
-      substrateId: config.substrateId,
-      formulaId: config.formulaId,
-      finishId: config.finishId,
-      liquidNitrogenDosing: true
-    });
-    setActiveRfqData(updated);
-  };
-
-  const handleOpenRfqWithData = (data) => {
-    setActiveRfqData(data);
-    setRfqModalOpen(true);
-  };
-
-  const handleOpenDefaultRfq = () => {
-    setRfqModalOpen(true);
-  };
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
 
   return (
-    <div className="bg-steel-950 min-h-screen text-steel-100 flex flex-col selection:bg-clean-cyan selection:text-steel-950 font-sans">
-      
-      {/* Top Navigation */}
-      <Navbar onOpenRfq={handleOpenDefaultRfq} />
+    <ProjectProvider>
+      <Router>
+        <div className="bg-slate-50 min-h-screen text-slate-900 flex flex-col selection:bg-sky-200 selection:text-slate-900 font-sans antialiased">
+          
+          {/* Main Bright Glass Navigation Header */}
+          <Header onOpenSaveModal={() => setSaveModalOpen(true)} />
 
-      {/* Main Content Sections */}
-      <main className="flex-1">
-        <Hero
-          onOpenStudio={() => {
-            const el = document.getElementById('studio');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onOpenEstimator={() => {
-            const el = document.getElementById('estimator');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        />
+          {/* Multi-Page Routes */}
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<HomePage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/sourcing" element={<SourcingPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/design-print" element={<DesignPrintPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/case-box-design" element={<CaseDesignPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/formulation" element={<FormulationPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/manufacturing" element={<ManufacturingPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/quote" element={<QuotePage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="/account" element={<AccountPage onOpenSaveModal={() => setSaveModalOpen(true)} />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
 
-        {/* Live Plant Telemetry HUD */}
-        <PlantHud />
+          {/* Master Clean Minimal Footer */}
+          <Footer />
 
-        {/* 4 High-Speed Production Lines */}
-        <CapabilitiesSection />
+          {/* Customer Spec Vault & Save Modal */}
+          <SaveProjectModal
+            isOpen={saveModalOpen}
+            onClose={() => setSaveModalOpen(false)}
+          />
 
-        {/* 5-Step Process Pipeline */}
-        <ProcessPipeline />
-
-        {/* Water Chemistry & Formulations */}
-        <WaterTechSection />
-
-        {/* 3D Custom Bottle Studio */}
-        <BottleStudio onConfigureForRfq={handleStudioConfigApplied} />
-
-        {/* Turnkey RFQ Calculator Matrix */}
-        <RfqCalculator
-          initialConfig={activeConfig}
-          onOpenRfqWithData={handleOpenRfqWithData}
-        />
-
-        {/* Quality & Certifications Hub */}
-        <QualityHub />
-
-        {/* Plant Tour & Contact */}
-        <ContactSection />
-      </main>
-
-      {/* Footer */}
-      <Footer />
-
-      {/* Interactive RFQ Modal */}
-      <RfqModal
-        isOpen={rfqModalOpen}
-        onClose={() => setRfqModalOpen(false)}
-        rfqData={activeRfqData}
-      />
-
-    </div>
+        </div>
+      </Router>
+    </ProjectProvider>
   );
 }

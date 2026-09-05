@@ -1,66 +1,75 @@
 import React from 'react';
-import { ShieldCheck, Phone, Mail, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck, Phone, Mail, MapPin, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-steel-950 text-steel-400 py-16 px-4 sm:px-8 border-t border-steel-800 text-xs font-mono">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-steel-800">
+    <footer className="bg-white text-slate-600 py-16 px-4 sm:px-8 border-t border-slate-200 text-xs">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-200">
         
         {/* Brand Col */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-white font-display font-extrabold text-lg tracking-tight">
-            CLEAN <span className="text-clean-cyan font-light">MANUFACTURING</span>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-brand-navy flex items-center justify-center text-brand-cyan shadow-sm">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <span className="font-display font-extrabold text-lg text-brand-navy">
+              CLEAN <span className="text-brand-blue font-light">MANUFACTURING</span>
+            </span>
           </div>
-          <p className="text-xs text-steel-400 leading-relaxed font-sans">
-            High-speed contract beverage manufacturing, custom water chemistry (Alkaline, Molecular H2, Pure RO), and turnkey co-packing services engineered for precision and scale.
+
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Premier turnkey beverage co-packing, packaging design print house, secondary case packaging engineering, and water formulation platform.
           </p>
-          <div className="flex items-center gap-2 text-[11px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 w-fit">
-            <ShieldCheck className="w-4 h-4" />
-            SQF Level 3 • FDA Registered
+
+          <div className="flex items-center gap-2 text-[11px] font-mono text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 w-fit font-bold">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            SQF Level 3 • FDA cGMP Part 117
           </div>
         </div>
 
-        {/* Manufacturing Lines */}
-        <div className="space-y-3">
-          <div className="font-bold text-white uppercase tracking-wider text-xs">Production Lines</div>
-          <ul className="space-y-2 text-steel-400">
-            <li><a href="#capabilities" className="hover:text-clean-cyan transition-colors">Line 1: 1,200 BPM Aluminum Bottle/Can</a></li>
-            <li><a href="#capabilities" className="hover:text-clean-cyan transition-colors">Line 2: 600 BPM Flint Glass Luxury</a></li>
-            <li><a href="#capabilities" className="hover:text-clean-cyan transition-colors">Line 3: 1,000 BPM 100% Eco rPET</a></li>
-            <li><a href="#capabilities" className="hover:text-clean-cyan transition-colors">Line 4: Pilot R&D / Micro-Batches</a></li>
+        {/* Specialized Department Portals */}
+        <div className="space-y-3 font-mono">
+          <div className="font-bold text-brand-navy uppercase tracking-wider text-xs">Department Portals</div>
+          <ul className="space-y-2 text-slate-500">
+            <li><Link to="/sourcing" className="hover:text-brand-blue transition-colors">1. Sourcing & Packaging Models</Link></li>
+            <li><Link to="/design-print" className="hover:text-brand-blue transition-colors">2. Package Design & Print House</Link></li>
+            <li><Link to="/case-box-design" className="hover:text-brand-blue transition-colors">3. Case & Box Design Center</Link></li>
+            <li><Link to="/formulation" className="hover:text-brand-blue transition-colors">4. Water Chemistry & R&D</Link></li>
+            <li><Link to="/manufacturing" className="hover:text-brand-blue transition-colors">5. 1,200 BPM Co-Packing Lines</Link></li>
           </ul>
         </div>
 
-        {/* Formulation Technologies */}
-        <div className="space-y-3">
-          <div className="font-bold text-white uppercase tracking-wider text-xs">Formulations</div>
-          <ul className="space-y-2 text-steel-400">
-            <li><a href="#water-tech" className="hover:text-clean-cyan transition-colors">Alkaline 9.5+ pH Ionized</a></li>
-            <li><a href="#water-tech" className="hover:text-clean-cyan transition-colors">Molecular Hydrogen (H2) Infused</a></li>
-            <li><a href="#water-tech" className="hover:text-clean-cyan transition-colors">Pharmaceutical 7-Stage RO</a></li>
-            <li><a href="#water-tech" className="hover:text-clean-cyan transition-colors">Natural Artesian Spring</a></li>
+        {/* Client Tools & Portal */}
+        <div className="space-y-3 font-mono">
+          <div className="font-bold text-brand-navy uppercase tracking-wider text-xs">Client Tools</div>
+          <ul className="space-y-2 text-slate-500">
+            <li><Link to="/account" className="hover:text-brand-blue transition-colors">Customer Account & Saved Specs</Link></li>
+            <li><Link to="/quote" className="hover:text-brand-blue transition-colors">Consolidated RFQ Cost Matrix</Link></li>
+            <li><Link to="/account" className="hover:text-brand-blue transition-colors">Request Physical Sample Kit</Link></li>
+            <li><Link to="/manufacturing" className="hover:text-brand-blue transition-colors">Plant Tour & Cleanroom Audit</Link></li>
           </ul>
         </div>
 
-        {/* Plant Location & Contact */}
-        <div className="space-y-3">
-          <div className="font-bold text-white uppercase tracking-wider text-xs">Plant Contact</div>
-          <div className="space-y-2 text-steel-400">
-            <p className="text-white">Clean Manufacturing Inc.</p>
-            <p>4400 N Scottsdale Rd, Ste. 308<br />Scottsdale, AZ 85251</p>
-            <p className="text-clean-cyan font-bold">Tel: 866-244-1003</p>
-            <p className="text-steel-300">manufacturing@cleanbottling.com</p>
+        {/* Plant Headquarters & Contact */}
+        <div className="space-y-3 font-mono">
+          <div className="font-bold text-brand-navy uppercase tracking-wider text-xs">Plant Contact</div>
+          <div className="space-y-2 text-slate-600 text-xs">
+            <p className="font-bold text-slate-900">Clean Manufacturing, Inc.</p>
+            <p className="text-slate-500">4400 N Scottsdale Rd, Ste. 308<br />Scottsdale, AZ 85251</p>
+            <p className="text-brand-blue font-bold">Tel: 866-244-1003</p>
+            <p className="text-slate-500">manufacturing@cleanbottling.com</p>
           </div>
         </div>
 
       </div>
 
-      <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-steel-500 text-[11px]">
+      <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-400 text-[11px] font-mono">
         <div>&copy; {new Date().getFullYear()} Clean Manufacturing, Inc. All rights reserved.</div>
         <div className="flex items-center gap-6">
-          <span>cGMP 21 CFR Part 117</span>
           <span>ISO Class 7 Cleanroom</span>
-          <span>Terms of Contract</span>
+          <span>GFSI SQF Benchmark</span>
+          <span>Privacy & Terms</span>
         </div>
       </div>
     </footer>
